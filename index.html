@@ -1,0 +1,335 @@
+<title>SBH</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans+JP:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --canvas:#f8f5ec;
+    --canvas-alt:#ffffff;
+    --ink:#241f19;
+    --ink-soft:#756c59;
+    --accent:#cf4426;
+    --accent-ink:#ffffff;
+    --line:#e6ddc4;
+    --line-soft:#efe9d8;
+    --dot:#e6ddc4;
+    --shadow: 0 1px 0 rgba(36,31,25,0.05);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --canvas:#221e17;
+      --canvas-alt:#2c2720;
+      --ink:#f3ecdb;
+      --ink-soft:#b3a690;
+      --accent:#ff8a5c;
+      --accent-ink:#231409;
+      --line:#423c30;
+      --line-soft:#362f26;
+      --dot:#3a342a;
+      --shadow: 0 1px 0 rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --canvas:#221e17;
+    --canvas-alt:#2c2720;
+    --ink:#f3ecdb;
+    --ink-soft:#b3a690;
+    --accent:#ff8a5c;
+    --accent-ink:#231409;
+    --line:#423c30;
+    --line-soft:#362f26;
+    --dot:#3a342a;
+    --shadow: 0 1px 0 rgba(0,0,0,0.35);
+  }
+
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;
+    background:var(--canvas);
+    color:var(--ink);
+    font-family:"IBM Plex Sans JP","Hiragino Sans",sans-serif;
+    line-height:1.8;
+    font-feature-settings:"palt";
+  }
+  ::selection{ background:var(--accent); color:var(--accent-ink); }
+
+  .mono{ font-family:"IBM Plex Mono",ui-monospace,monospace; font-variant-numeric:tabular-nums; }
+  .eyebrow{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:.72rem;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+  }
+
+  /* registration-mark svg, reused as a decorative unit */
+  .regmark{ display:inline-block; width:14px; height:14px; opacity:.55; flex:none; }
+  .regmark path,.regmark circle{ stroke:currentColor; fill:none; stroke-width:1.4; }
+
+  header{
+    position:relative;
+    overflow:hidden;
+    padding:96px 24px 72px;
+    text-align:center;
+    border-bottom:1px solid var(--line);
+    background-image:
+      radial-gradient(circle at 1px 1px, var(--dot) 1px, transparent 0);
+    background-size:22px 22px;
+    background-position:center;
+    background-color:var(--canvas);
+  }
+  header::before{
+    /* fades the halftone toward the edges so it reads as texture, not noise */
+    content:"";
+    position:absolute; inset:0;
+    background:
+      radial-gradient(ellipse 60% 90% at center, transparent 0%, var(--canvas) 72%);
+  }
+  header .regmark{ position:absolute; width:20px; height:20px; color:var(--ink-soft); opacity:.4; }
+  header .regmark.tl{ top:20px; left:20px; }
+  header .regmark.tr{ top:20px; right:20px; }
+  header .regmark.bl{ bottom:20px; left:20px; }
+  header .regmark.br{ bottom:20px; right:20px; }
+  header .inner{ position:relative; z-index:1; }
+
+  h1.wordmark{
+    font-family:"Bebas Neue","Arial Narrow",sans-serif;
+    font-size:clamp(4.2rem, 14vw, 7.2rem);
+    letter-spacing:.04em;
+    line-height:.9;
+    margin:18px 0 6px;
+    color:var(--ink);
+  }
+  header .tagline{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:.85rem;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    color:var(--accent);
+    margin:0;
+  }
+  header .sub{
+    font-size:1.02rem;
+    color:var(--ink-soft);
+    margin:26px auto 0;
+    max-width:30em;
+  }
+
+  main{ max-width:800px; margin:0 auto; padding:0 24px; }
+
+  section{ padding:64px 0; border-bottom:1px solid var(--line); }
+  section:last-of-type{ border-bottom:none; }
+
+  .section-head{
+    display:flex; align-items:baseline; gap:14px;
+    margin-bottom:32px;
+  }
+  .section-head .num{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:.8rem; color:var(--ink-soft);
+  }
+  .section-head h2{
+    font-family:"Bebas Neue",sans-serif;
+    font-size:1.9rem;
+    letter-spacing:.03em;
+    margin:0;
+    text-wrap:balance;
+  }
+
+  /* --- business lines as job-ticket cards --- */
+  .tickets{ display:grid; grid-template-columns:1fr; gap:18px; }
+  .ticket{
+    background:var(--canvas-alt);
+    border:1px solid var(--line);
+    padding:26px 26px 24px;
+    box-shadow:var(--shadow);
+  }
+  .ticket-top{
+    display:flex; justify-content:space-between; align-items:flex-start; gap:16px;
+    margin-bottom:12px;
+  }
+  .ticket h3{ font-size:1.08rem; margin:0; font-weight:600; }
+  .stamp{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:.68rem; letter-spacing:.08em; text-transform:uppercase;
+    border:1.4px solid var(--accent);
+    color:var(--accent);
+    padding:3px 9px;
+    border-radius:999px;
+    white-space:nowrap;
+    transform:rotate(-2deg);
+  }
+  .ticket p{ margin:0; color:var(--ink-soft); }
+
+  /* --- price list as ink swatches --- */
+  .swatch-list{ list-style:none; margin:0; padding:0; }
+  .swatch-row{
+    display:flex; align-items:center; gap:16px;
+    padding:16px 0;
+    border-bottom:1px solid var(--line-soft);
+  }
+  .swatch-row:last-child{ border-bottom:none; }
+  .swatch{
+    width:16px; height:16px; border-radius:50%;
+    background:var(--accent);
+    flex:none;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.15);
+  }
+  .swatch-row .label{ flex:1; min-width:0; }
+  .swatch-row .label .name{ font-weight:600; }
+  .swatch-row .label .meta{ color:var(--ink-soft); font-size:.88rem; }
+  .swatch-row .price{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:1.02rem;
+    white-space:nowrap;
+  }
+  .price-note{ margin-top:18px; font-size:.86rem; color:var(--ink-soft); }
+
+  /* --- process as a numbered production run --- */
+  ol.run{ list-style:none; margin:0; padding:0; counter-reset:step; }
+  ol.run li{
+    counter-increment:step;
+    display:grid;
+    grid-template-columns:44px 1fr;
+    gap:18px;
+    padding:16px 0;
+    border-bottom:1px dashed var(--line);
+    align-items:start;
+  }
+  ol.run li:last-child{ border-bottom:none; }
+  ol.run li::before{
+    content:"0" counter(step);
+    font-family:"IBM Plex Mono",monospace;
+    font-size:1.3rem;
+    color:var(--line);
+    -webkit-text-stroke:1px var(--ink-soft);
+    line-height:1.5;
+  }
+  ol.run .step-body{ color:var(--ink-soft); padding-top:2px; }
+  ol.run .step-body strong{ color:var(--ink); font-weight:600; display:block; margin-bottom:2px; }
+
+  footer{
+    padding:56px 24px 90px;
+    text-align:center;
+  }
+  footer .contact{
+    font-size:.95rem; color:var(--ink-soft); margin:0 0 34px;
+  }
+  .seal{
+    width:104px; height:104px;
+    margin:0 auto;
+    border:1.4px solid var(--ink-soft);
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    position:relative;
+    transform:rotate(-4deg);
+    color:var(--ink-soft);
+  }
+  .seal::before{
+    content:"";
+    position:absolute; inset:6px;
+    border:1px solid var(--ink-soft);
+    border-radius:50%;
+  }
+  .seal-text{
+    font-family:"Bebas Neue",sans-serif;
+    font-size:1.5rem;
+    letter-spacing:.06em;
+  }
+  .op-info{
+    margin-top:22px;
+    font-family:"IBM Plex Mono",monospace;
+    font-size:.78rem;
+    color:var(--ink-soft);
+    letter-spacing:.02em;
+  }
+
+  @media (min-width:640px){
+    .tickets{ grid-template-columns:1fr 1fr; }
+  }
+
+  @media (prefers-reduced-motion:no-preference){
+    .fade-in{ animation:fadeIn .5s ease-out both; }
+  }
+  @keyframes fadeIn{ from{ opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;} }
+</style>
+
+<header>
+  <svg class="regmark tl" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7"/><path d="M10 1v18M1 10h18"/></svg>
+  <svg class="regmark tr" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7"/><path d="M10 1v18M1 10h18"/></svg>
+  <svg class="regmark bl" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7"/><path d="M10 1v18M1 10h18"/></svg>
+  <svg class="regmark br" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7"/><path d="M10 1v18M1 10h18"/></svg>
+  <div class="inner">
+    <p class="eyebrow">Screen Printing / Small-Batch Apparel</p>
+    <h1 class="wordmark">SBH</h1>
+    <p class="tagline">Small but hard</p>
+    <p class="sub">人間が作るから、同じものは二つとない。<br>一枚ずつ、手刷りでつくるオリジナルアパレル。</p>
+  </div>
+</header>
+
+<main>
+
+  <section>
+    <div class="section-head"><span class="num mono">01</span><h2>事業内容</h2></div>
+    <div class="tickets">
+      <div class="ticket">
+        <div class="ticket-top">
+          <h3>受託製造 <span class="mono" style="font-size:.8rem;color:var(--ink-soft);">BtoB</span></h3>
+          <span class="stamp">受注受付中</span>
+        </div>
+        <p>アーティスト・音楽フェス出演者・イベント主催法人様向けに、オリジナルTシャツ等の企画から製造までを承ります。機械印刷による大量生産ではなく、シルクスクリーンによる手刷りにこだわり、既製品にはない風合いと価値をお届けします。</p>
+      </div>
+      <div class="ticket">
+        <div class="ticket-top">
+          <h3>自社ブランド <span class="mono" style="font-size:.8rem;color:var(--ink-soft);">BtoC</span></h3>
+          <span class="stamp">準備中</span>
+        </div>
+        <p>数量限定のオリジナルデザインアイテムを、シリーズ（ドロップ）ごとに展開予定です。詳細は近日公開いたします。</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><span class="num mono">02</span><h2>価格の目安</h2></div>
+    <ul class="swatch-list">
+      <li class="swatch-row">
+        <span class="swatch"></span>
+        <span class="label">
+          <span class="name">受託製造（BtoB）</span><br>
+          <span class="meta">数量・デザイン内容により変動</span>
+        </span>
+        <span class="price mono">¥1,500〜1,800<span style="color:var(--ink-soft);font-size:.8em;"> / 枚</span></span>
+      </li>
+      <li class="swatch-row">
+        <span class="swatch" style="opacity:.55;"></span>
+        <span class="label">
+          <span class="name">自社ブランド（BtoC）</span><br>
+          <span class="meta">数量限定ドロップ</span>
+        </span>
+        <span class="price mono">¥15,000〜<span style="color:var(--ink-soft);font-size:.8em;"> / 点</span></span>
+      </li>
+    </ul>
+    <p class="price-note">上記は目安です。生地・色数・数量に応じて、正式なお見積りをご案内します。</p>
+  </section>
+
+  <section>
+    <div class="section-head"><span class="num mono">03</span><h2>ご依頼の流れ</h2></div>
+    <ol class="run">
+      <li><div class="step-body"><strong>お問い合わせ</strong>数量・デザイン・納期のご希望をお伺いします</div></li>
+      <li><div class="step-body"><strong>お見積り</strong>内容を確認のうえ、金額をご案内します</div></li>
+      <li><div class="step-body"><strong>ご発注確定</strong></div></li>
+      <li><div class="step-body"><strong>製版・印刷・検品</strong>スクリーンを製版し、一枚ずつ手刷りします</div></li>
+      <li><div class="step-body"><strong>梱包・発送</strong></div></li>
+      <li><div class="step-body"><strong>ご請求</strong>納品後にご請求書を発行します</div></li>
+    </ol>
+  </section>
+
+</main>
+
+<footer>
+  <p class="contact">お問い合わせ窓口は準備中です。近日公開いたします。</p>
+  <div class="seal"><span class="seal-text">SBH</span></div>
+  <p class="op-info">屋号 SBH（Small but hard）</p>
+</footer>
